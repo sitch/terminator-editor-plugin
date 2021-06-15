@@ -15,12 +15,13 @@ from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
 
-DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
-DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
-DEFAULT_GROUPS = 'file line'
-# DEFAULT_COMMAND = 'vscodium --goto {filepath}:{line}'
-# DEFAULT_REGEX = r'([^:\(\s]+([\.\w]{1,30}))([ :\n]|$)([0-9]+)*([\s:]|$)([0-9]+)*'
-# DEFAULT_GROUPS = 'file extension line_separator line column_separator column'
+# DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
+# DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
+# DEFAULT_GROUPS = 'file line'
+
+DEFAULT_COMMAND = 'vscodium --goto {filepath}:{line}'
+DEFAULT_REGEX = r'([^:\(\s]+[\.\w]+)(:([0-9]+)){0,1}(:([0-9]+)){0,1}'
+DEFAULT_GROUPS = 'file extension line_separator line column_separator column'
 DEFAULT_OPEN_IN_CURRENT_TERM = False
 
 def to_bool(val):
@@ -110,32 +111,22 @@ def findmatch(config, cwd, libdir, strmatch):
     filepath = None
     line = column = 1
 
-    # pprint(["strmatch", strmatch])
-    # print('\n\n')
+    # pprint(["strmatch", strmatch, '\n'])
 
     match = re.match(config['match'], strmatch)
 
     if match is None:
         return None, 1, 1
 
-    # pprint(["match", match])
-    # print('\n\n')
-
     groups = [group for group in match.groups() if group is not None]
-
-    # pprint(["groups", groups])
-    # print('\n\n')
-
     group_names = config['groups'].split()
 
-    # pprint(["group_names", group_names])
-    # print('\n\n')
+    # pprint(["match", match, '\n'])
+    # pprint(["groups", groups, '\n'])
+    # pprint(["group_names", group_names, '\n'])
 
     for group_value, group_name in zip(groups, group_names):
-        # pprint(["group_name", group_name])
-        # print('\n')
-        # pprint(["group_value", group_value])
-        # print('\n\n')
+        # pprint([group_name, group_value, '\n'])
 
         if group_name == 'file':
             filepath = os.path.join(cwd, group_value)
