@@ -23,6 +23,9 @@ config = {
     'groups': 'file _line_separator line _column_separator column',
 }
 
+
+
+
 @pytest.mark.parametrize('cwd, libdir, strmatch, expected', [
     (cwd, libdir, file, (file, 1, 1)),
     (cwd, libdir, file + ':', (file, 1, 1)),
@@ -32,8 +35,6 @@ config = {
     (cwd, libdir, file + ':6:7:', (file, 6, 7)),
     (cwd, libdir, file + ':6:7:', (file, 6, 7)),
 
-
-    #  test/test_regex.py::test_findmatch[/home/sitch/sites/terminator-editor-plugin--/home/sitch/sites/terminator-editor-plugin/editor_plugin.pymissing:0-expected7] ✓73% 
 
     # # File doesn't exist
     (cwd, libdir, file + 'missing', (None, 1, 1)),
@@ -45,3 +46,15 @@ config = {
 def test_findmatch(cwd, libdir, strmatch, expected):
     assert findmatch(config, cwd, libdir, strmatch) == expected
 
+
+def test_mix_test():
+    cwd = '/home/sitch/sites/chainapi/chainapi-api'
+    line = '       test/chainapi/domains/apis/schemas/endpoint_parameter_test.exs:32: (test)\n'
+    assert findmatch(config, cwd, libdir, line) == ('test/chainapi/domains/apis/schemas/endpoint_parameter_test.exs', 32, 1)
+
+
+@pytest.mark.skip()
+def test_mix_test():
+    cwd = '/home/sitch/sites/chainapi/chainapi-api'
+    line = 'test/test_regex.py::test_findmatch[/home/sitch/sites/terminator-editor-plugin--/home/sitch/sites/terminator-editor-plugin/editor_plugin.pymissing:0-expected7] ✓73%\n'
+    assert findmatch(config, cwd, libdir, line) == ('/home/sitch/sites/terminator-editor-plugin', 1, 1)

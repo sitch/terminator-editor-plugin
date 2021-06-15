@@ -11,7 +11,6 @@ import re
 import shlex
 import subprocess
 from terminatorlib import plugin, config
-# from pprint import pprint
 
 AVAILABLE = ['EditorPlugin']
 
@@ -107,7 +106,8 @@ def findmatch(config, cwd, libdir, strmatch):
     filepath = None
     line = column = 1
 
-    # pprint(["strmatch", strmatch, '\n'])
+    from pprint import pprint
+    pprint(["strmatch", strmatch, '\n'])
 
     match = re.match(config['match'], strmatch)
 
@@ -117,12 +117,12 @@ def findmatch(config, cwd, libdir, strmatch):
     groups = [group for group in match.groups() if group is not None]
     group_names = config['groups'].split()
 
-    # pprint(["match", match, '\n'])
-    # pprint(["groups", groups, '\n'])
-    # pprint(["group_names", group_names, '\n'])
+    pprint(["match", match, '\n'])
+    pprint(["groups", groups, '\n'])
+    pprint(["group_names", group_names, '\n'])
 
     for group_value, group_name in zip(groups, group_names):
-        # pprint([group_name, group_value, '\n'])
+        pprint([group_name, group_value, '\n'])
 
         if group_name == 'file':
             filepath = os.path.join(cwd, group_value)
