@@ -11,12 +11,15 @@ import re
 import shlex
 import subprocess
 from terminatorlib import plugin, config
+# from pprint import pprint
 
 AVAILABLE = ['EditorPlugin']
 
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
-DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
-DEFAULT_GROUPS = 'file line'
+# DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
+# DEFAULT_GROUPS = 'file line'
+DEFAULT_REGEX = r'([^:\(\s]+([\.\w]{1,30}))([ :\n]|$)([0-9]+)*([\s:]|$)([0-9]+)*'
+DEFAULT_GROUPS = 'file extension line_separator line column_separator column'
 DEFAULT_OPEN_IN_CURRENT_TERM = False
 
 def to_bool(val):
@@ -72,42 +75,18 @@ class EditorPlugin(plugin.URLHandler):
         # the command, we need to climb the stack to see how we got here.
         return inspect.stack()[3][3] == 'open_url'
 
-    def search_filepath_in_libdir(self, group_value):
-        filename = group_value.split('/')[-1]
-        libdir = self.config.plugin_get(self.plugin_name, 'libdir')
-
-        for dirpath, dirnames, filenames in os.walk(os.path.expanduser(libdir)):
-            for name in filenames:
-                if name == filename:
-                    return os.path.join(dirpath, name)
-
-    def get_filepath(self, strmatch):
-        filepath = None
-        line = column = '1'
-
-        config = self.config.plugin_get_config(self.plugin_name)
-        match = re.match(config['match'], strmatch)
-        groups = [group for group in match.groups() if group is not None]
-        group_names = config['groups'].split()
-
-        for group_value, group_name in zip(groups, group_names):
-            if group_name == 'file':
-                filepath = os.path.join(self.get_cwd(), group_value)
-                if not os.path.exists(filepath):
-                    filepath = self.search_filepath_in_libdir(group_value)
-            elif group_name == 'line':
-                line = group_value
-            elif group_name == 'column':
-                column = group_value
-        return filepath, line, column
-
     def callback(self, strmatch):
-        filepath, line, column = self.get_filepath(strmatch)
+        cwd = self.get_cwd()
+        libdir = self.config.plugin_get(self.plugin_name, 'libdir')
+        config = self.config.plugin_get_config(self.plugin_name)
+
+        filepath, line, column = findmatch(config, cwd, libdir, strmatch)
+
         if filepath:
             command = self.config.plugin_get(self.plugin_name, 'command')
             command = command.replace('{filepath}', filepath)
-            command = command.replace('{line}', line)
-            command = command.replace('{column}', column)
+            command = command.replace('{line}', str(line))
+            command = command.replace('{column}', str(column))
             if self.open_url():
                 if self.config.plugin_get(self.plugin_name, 'open_in_current_term'):
                     self.get_terminal().feed(command + '\n')
@@ -115,3 +94,59 @@ class EditorPlugin(plugin.URLHandler):
                     subprocess.call(shlex.split(command))
                 return '--version'
             return command
+
+
+def search_filepath_in_libdir(libdir, group_value):
+    filename = group_value.split('/')[-1]
+
+    for dirpath, dirnames, filenames in os.walk(os.path.expanduser(libdir)):
+        for name in filenames:
+            if name == filename:
+                return os.path.join(dirpath, name)
+
+
+def findmatch(config, cwd, libdir, strmatch):
+    filepath = None
+    line = column = 1
+
+    # pprint(["strmatch", strmatch])
+    # print('\n\n')
+
+    match = re.match(config['match'], strmatch)
+
+    if match is None:
+        return None, 1, 1
+
+    # pprint(["match", match])
+    # print('\n\n')
+
+    groups = [group for group in match.groups() if group is not None]
+
+    # pprint(["groups", groups])
+    # print('\n\n')
+
+    group_names = config['groups'].split()
+
+    # pprint(["group_names", group_names])
+    # print('\n\n')
+
+    for group_value, group_name in zip(groups, group_names):
+        # pprint(["group_name", group_name])
+        # print('\n')
+        # pprint(["group_value", group_value])
+        # print('\n\n')
+
+        if group_name == 'file':
+            filepath = os.path.join(cwd, group_value)
+            if not os.path.exists(filepath):
+                if libdir:
+                    filepath = search_filepath_in_libdir(libdir, group_value)
+                else:
+                    filepath = None
+        elif group_name == 'line':
+            if group_value:
+                line = group_value
+        elif group_name == 'column':
+            column = group_value
+    return filepath, int(line), int(column)
+
