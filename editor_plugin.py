@@ -21,7 +21,7 @@ AVAILABLE = ['EditorPlugin']
 
 DEFAULT_COMMAND = 'vscodium --goto {filepath}:{line}'
 DEFAULT_REGEX = r'([^:\(\s]+[\.\w]+)(:([0-9]+)){0,1}(:([0-9]+)){0,1}'
-DEFAULT_GROUPS = 'file extension line_separator line column_separator column'
+DEFAULT_GROUPS = 'file _line_separator line _column_separator column'
 DEFAULT_OPEN_IN_CURRENT_TERM = False
 
 def to_bool(val):
