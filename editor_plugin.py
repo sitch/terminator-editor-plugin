@@ -16,10 +16,11 @@ from terminatorlib import plugin, config
 AVAILABLE = ['EditorPlugin']
 
 DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
-# DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
-# DEFAULT_GROUPS = 'file line'
-DEFAULT_REGEX = r'([^:\(\s]+([\.\w]{1,30}))([ :\n]|$)([0-9]+)*([\s:]|$)([0-9]+)*'
-DEFAULT_GROUPS = 'file extension line_separator line column_separator column'
+DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
+DEFAULT_GROUPS = 'file line'
+# DEFAULT_COMMAND = 'vscodium --goto {filepath}:{line}'
+# DEFAULT_REGEX = r'([^:\(\s]+([\.\w]{1,30}))([ :\n]|$)([0-9]+)*([\s:]|$)([0-9]+)*'
+# DEFAULT_GROUPS = 'file extension line_separator line column_separator column'
 DEFAULT_OPEN_IN_CURRENT_TERM = False
 
 def to_bool(val):
