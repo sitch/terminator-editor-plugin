@@ -15,13 +15,9 @@ from terminatorlib import plugin, config
 
 AVAILABLE = ['EditorPlugin']
 
-# DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
-# DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
-# DEFAULT_GROUPS = 'file line'
-
-DEFAULT_COMMAND = 'vscodium --goto {filepath}:{line}'
-DEFAULT_REGEX = r'([^:\(\s]+[\.\w]+)(:([0-9]+)){0,1}(:([0-9]+)){0,1}'
-DEFAULT_GROUPS = 'file _line_separator line _column_separator column'
+DEFAULT_COMMAND = 'gvim --remote-silent +{line} {filepath}'
+DEFAULT_REGEX = r'([^ \t\n\r\f\v:]+?):([0-9]+)'
+DEFAULT_GROUPS = 'file line'
 DEFAULT_OPEN_IN_CURRENT_TERM = False
 
 def to_bool(val):

@@ -14,6 +14,8 @@ config = {
     # 'match': r'([^:\(\s]+?\.([\w]{1,20}))([\s:]|$)([0-9]+)*([\s:]|$)([0-9]+)*',
     # 'match': r'([^:\(\s]+?\.?([\w]{1,30}))([ :\n]|$)([0-9]+)*([\s:]|$)([0-9]+)*',
     # 'match': r'([^:\(\s]+([\.\w]{1,30}))([ :\n]|$)([0-9]+)*([\s:]|$)([0-9]+)*',
+    # 'match': r'[\(: \n]?([~\/a-zA-Z][^:\(\s]+[\.\w]+)(:([0-9]+)){0,1}(:([0-9]+)){0,1}',
+    # 'match': r'([~\/a-zA-Z][^:\(\s]+[\.\w]+)(:([0-9]+)){0,1}(:([0-9]+)){0,1}',
     'match': r'([^:\(\s]+[\.\w]+)(:([0-9]+)){0,1}(:([0-9]+)){0,1}',
     'groups': 'file _line_separator line _column_separator column',
 }
@@ -25,6 +27,10 @@ config = {
     (cwd, libdir, file + ':3:', (file, 3, 1)),
     (cwd, libdir, file + ':4:5', (file, 4, 5)),
     (cwd, libdir, file + ':6:7:', (file, 6, 7)),
+    (cwd, libdir, file + ':6:7:', (file, 6, 7)),
+
+
+    #  test/test_regex.py::test_findmatch[/home/sitch/sites/terminator-editor-plugin--/home/sitch/sites/terminator-editor-plugin/editor_plugin.pymissing:0-expected7] ✓73% 
 
     # # File doesn't exist
     (cwd, libdir, file + 'missing', (None, 1, 1)),
